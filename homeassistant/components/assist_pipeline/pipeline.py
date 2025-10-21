@@ -1865,11 +1865,12 @@ class PipelineStorageCollection(
 
     async def _async_load_data(self) -> SerializedPipelineStorageCollection | None:
         """Load the data."""
+        # Case 1: Data not found → create default pipeline
         if not (data := await super()._async_load_data()):
             pipeline = await _async_create_default_pipeline(self.hass, self)
             self._preferred_item = pipeline.id
-            return data
-
+            return None
+        # Case 2: Data found → return structured result
         self._preferred_item = data["preferred_item"]
 
         return data
